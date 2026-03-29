@@ -1,0 +1,19 @@
+﻿<Window x:Class="GeometryDash.Views.LevelCompleteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Level Complete" Height="618" Width="1229">
+    <Grid>
+        <TextBlock Text="Level Complete!" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,440,0,0" FontSize="24"/>
+
+        <Image Source="/Resources/logo14.jpg" Stretch="UniformToFill"/>
+        <TextBox TextWrapping="Wrap" Text=" Level Complete!" FontSize="24" FontWeight="Bold" Height="40" Margin="514,147,515,415" Background="Ivory"/>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,100,0,0">
+            <Button Content="Retry Level" Width="200" Height="40" Background="LightGreen" FontSize="16" FontWeight="Bold" Click="RetryLevel_Click" Cursor="SizeAll"/>
+            <Button Content="Next Level" Width="200" Height="40" Background="HotPink" FontSize="16" FontWeight="Bold" Click="NextLevel_Click" Cursor="SizeWE"/>
+            <Button Content="Main Menu" Width="200" Height="40" Background="Purple" FontSize="16" FontWeight="Bold" Click="MainMenu_Click"/>
+            <Button Content="Exit Game" Width="200" Height="40" Background="Red" FontSize="16" FontWeight="Bold" Click="ExitGame_Click" Cursor="ScrollNW"/>
+
+        </StackPanel>
+        <TextBox TextWrapping="Wrap" Text="     🌸🥳Level Complete!🥳🌸   " FontSize="24" FontWeight="Bold" Margin="436,147,433,395" Background="LightCoral" TextChanged="TextBox_TextChanged"/>
+    </Grid>
+</Window>

@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GeometryDash.Managers.LevelManager">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAACAAAAABAAEAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Models\LevelManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeometryDash.Models.Obstacle">
+    <Position X="9.5" Y="2.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="GeometryDash.Models.Obstacle.ObstacleType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Models\Obstacle.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAABAAAAAAAEABAAAAgAAAAQAAAAAAYAA=</HashCode>
+      <FileName>Models\Obstacle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeometryDash.Models.Player" BaseTypeListCollapsed="true">
+    <Position X="11" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAIAAAAAIAAAAAAAgAAAAAAAAARgAAAEYAA=</HashCode>
+      <FileName>Models\Player.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RelayCommand">
+    <Position X="6.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQEACAAQAAECAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\GameViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.ViewModels.GameViewModel">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>DgwAACoAAgAQAAhAoQQAEAAkgACCAAAABABIAQAAgJA=</HashCode>
+      <FileName>ViewModels\GameViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.Views.Level1Window">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAggEABEQAAgYgQBwCgAEAAAAUACAAAEAAAAAoIA=</HashCode>
+      <FileName>Views\Level1Window.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.Views.GameOptionsWindow">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAACAAAAAAAACAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Views\GameOptionsWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.Views.Level2Window">
+    <Position X="2" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgggABEQAAgYgQBwCgAEAAAAUBCAAAEAAAAQoIA=</HashCode>
+      <FileName>Views\Level2Window.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.Views.Level3Window">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAggAABEQAAgYgQDwCgAEAAAAUAAAAAEAAAAAoIA=</HashCode>
+      <FileName>Views\Level3Window.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.Views.LevelCompleteWindow">
+    <Position X="5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAgAAAAAAAAAABACAAAAACAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Views\LevelCompleteWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GeometryDash.Views.MainMenu">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Views\MainMenu.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
