@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,41 +11,51 @@ namespace GeometryDash.Views
 {
     public partial class Level3Window : Window
     {
+        private const double TimerIntervalMs = 15;
+        private const double Gravity = 1;
+        private const double JumpForce = -13;
+        private const double BaseObstacleSpeed = 10;
+        private const double PositiveObstacleSpeedMultiplier = 0.3;
+        private const double GroundLevelY = 200;
+        private const double PlayerStartX = 44;
+        private const double LandingTolerance = 5;
+
         private DispatcherTimer gameTimer;
         private bool isJumping = false;
-        private double gravity = 1;
-        private double jumpStrength = -13;
         private double verticalVelocity = 0;
-        private double obstacleSpeed = 10;
         private bool gameOver = false;
         private bool isFalling = false;
         private bool isOnPositiveObstacle = false;
-        private double positiveObstacleSpeedMultiplier = 0.3;
         private Rectangle currentPositiveObstacle = null;
         private MediaPlayer gameMusic;
         private DateTime startTime;
 
+        private List<Shape> deadlyObstacles;
+        private List<Rectangle> positiveObstacles;
+
         public Level3Window()
         {
             InitializeComponent();
+            InitializeAudio();
+            InitializeObstacles();
+            InitializeTimer();
 
+            this.KeyDown += Level3Window_KeyDown;
+            startTime = DateTime.Now;
+        }
+
+        private void InitializeAudio()
+        {
             if (BackgroundMusic.Source != null)
                 BackgroundMusic.Play();
             else
                 MessageBox.Show("Файл музики не знайдено. Перевірте шлях до файлу.");
 
-            gameTimer = new DispatcherTimer();
-            gameTimer.Interval = TimeSpan.FromMilliseconds(15);
-            gameTimer.Tick += GameLoop;
-            gameTimer.Start();
-
-            this.KeyDown += Level3Window_KeyDown;
-
-            startTime = DateTime.Now;
             gameMusic = new MediaPlayer();
             try
             {
-                gameMusic.Open(new Uri("D:\\Сourse work\\GeometryDash\\GeometryDash\\Resources\\Geometry_Dash-Back_On_Track-world76.spcs.bio.mp3"));
+                string musicPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Geometry_Dash-Back_On_Track-world76.spcs.bio.mp3");
+                gameMusic.Open(new Uri(musicPath, UriKind.Absolute));
                 gameMusic.Play();
             }
             catch (Exception ex)
@@ -53,12 +64,26 @@ namespace GeometryDash.Views
             }
         }
 
+        private void InitializeObstacles()
+        {
+            deadlyObstacles = new List<Shape> { Obstacle1, Obstacle2 };
+            positiveObstacles = new List<Rectangle> { PositiveObstacle1, PositiveObstacle2, PositiveObstacle3, PositiveObstacle5 };
+        }
+
+        private void InitializeTimer()
+        {
+            gameTimer = new DispatcherTimer();
+            gameTimer.Interval = TimeSpan.FromMilliseconds(TimerIntervalMs);
+            gameTimer.Tick += GameLoop;
+            gameTimer.Start();
+        }
+
         private void Level3Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space && !isJumping)
             {
                 isJumping = true;
-                verticalVelocity = jumpStrength;
+                verticalVelocity = JumpForce;
             }
             else if (e.Key == Key.LeftShift || e.Key == Key.RightShift)
             {
@@ -74,27 +99,30 @@ namespace GeometryDash.Views
                 return;
             }
 
+            UpdatePlayerPhysics();
+            UpdateObstacles();
+            CheckGameConditions();
+        }
+
+        private void UpdatePlayerPhysics()
+        {
             if (isJumping)
             {
                 Canvas.SetTop(PlayerSprite, Canvas.GetTop(PlayerSprite) + verticalVelocity);
-                verticalVelocity += gravity;
+                verticalVelocity += Gravity;
 
                 if (verticalVelocity > 0)
                     isFalling = true;
 
                 if (CheckLandingOnPositiveObstacle())
                 {
-                    isJumping = false;
-                    isFalling = false;
-                    verticalVelocity = 0;
+                    StopJumping();
                     isOnPositiveObstacle = true;
                 }
-                else if (Canvas.GetTop(PlayerSprite) >= 200)
+                else if (Canvas.GetTop(PlayerSprite) >= GroundLevelY)
                 {
-                    Canvas.SetTop(PlayerSprite, 200);
-                    isJumping = false;
-                    isFalling = false;
-                    verticalVelocity = 0;
+                    Canvas.SetTop(PlayerSprite, GroundLevelY);
+                    StopJumping();
                 }
             }
 
@@ -113,25 +141,40 @@ namespace GeometryDash.Views
                 }
                 else
                 {
-                    Canvas.SetLeft(PlayerSprite, playerLeft + obstacleSpeed * positiveObstacleSpeedMultiplier);
+                    Canvas.SetLeft(PlayerSprite, playerLeft + BaseObstacleSpeed * PositiveObstacleSpeedMultiplier);
+                }
+            }
+        }
+
+        private void UpdateObstacles()
+        {
+            foreach (var obstacle in deadlyObstacles)
+            {
+                MoveObstacle(obstacle);
+            }
+
+            foreach (var positiveObstacle in positiveObstacles)
+            {
+                MoveObstacle(positiveObstacle);
+            }
+        }
+
+        private void CheckGameConditions()
+        {
+            foreach (var obstacle in deadlyObstacles)
+            {
+                if (CheckCollisionWithDanger(PlayerSprite, obstacle))
+                {
+                    gameOver = true;
                 }
             }
 
-            MoveObstacle(Obstacle1);
-            MoveObstacle(Obstacle2);
-            MoveObstacle(PositiveObstacle1);
-            MoveObstacle(PositiveObstacle2);
-            MoveObstacle(PositiveObstacle3);
-            MoveObstacle(PositiveObstacle5);
-
-            if (CheckCollisionWithDanger(PlayerSprite, Obstacle1) ||
-                CheckCollisionWithDanger(PlayerSprite, Obstacle2) ||
-                CheckCollisionWithDanger(PlayerSprite, PositiveObstacle1) ||
-                CheckCollisionWithDanger(PlayerSprite, PositiveObstacle2) ||
-                CheckCollisionWithDanger(PlayerSprite, PositiveObstacle3) ||
-                CheckCollisionWithDanger(PlayerSprite, PositiveObstacle5))
+            foreach (var positiveObstacle in positiveObstacles)
             {
-                gameOver = true;
+                if (CheckCollisionWithDanger(PlayerSprite, positiveObstacle))
+                {
+                    gameOver = true;
+                }
             }
 
             if (Canvas.GetLeft(PlayerSprite) > Canvas.GetLeft(PositiveObstacle5) + PositiveObstacle5.Width)
@@ -140,22 +183,33 @@ namespace GeometryDash.Views
             }
         }
 
+        private void StopJumping()
+        {
+            isJumping = false;
+            isFalling = false;
+            verticalVelocity = 0;
+        }
+
         private void MoveObstacle(Shape obstacle)
         {
             double left = Canvas.GetLeft(obstacle);
             if (left < -obstacle.Width)
                 left = GameCanvas.ActualWidth;
             else
-                left -= obstacleSpeed;
+                left -= BaseObstacleSpeed;
             Canvas.SetLeft(obstacle, left);
         }
 
         private bool CheckLandingOnPositiveObstacle()
         {
-            return CheckLanding(PlayerSprite, PositiveObstacle1) ||
-                       CheckLanding(PlayerSprite, PositiveObstacle2) ||
-                       CheckLanding(PlayerSprite, PositiveObstacle3) ||
-                       CheckLanding(PlayerSprite, PositiveObstacle5);
+            foreach (var obstacle in positiveObstacles)
+            {
+                if (CheckLanding(PlayerSprite, obstacle))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private bool CheckLanding(Image player, Rectangle obstacle)
@@ -163,9 +217,9 @@ namespace GeometryDash.Views
             Rect playerRect = new Rect(Canvas.GetLeft(player), Canvas.GetTop(player), player.Width, player.Height);
             Rect obstacleRect = new Rect(Canvas.GetLeft(obstacle), Canvas.GetTop(obstacle), obstacle.ActualWidth, obstacle.ActualHeight);
 
-            bool isAbove = playerRect.Bottom <= obstacleRect.Top + 5 &&
-                           playerRect.Right > obstacleRect.Left + 5 &&
-                           playerRect.Left < obstacleRect.Right - 5 &&
+            bool isAbove = playerRect.Bottom <= obstacleRect.Top + LandingTolerance &&
+                           playerRect.Right > obstacleRect.Left + LandingTolerance &&
+                           playerRect.Left < obstacleRect.Right - LandingTolerance &&
                            verticalVelocity >= 0;
 
             if (isAbove && playerRect.Bottom + verticalVelocity >= obstacleRect.Top)
@@ -173,9 +227,7 @@ namespace GeometryDash.Views
                 Canvas.SetTop(player, obstacleRect.Top - player.Height);
                 currentPositiveObstacle = obstacle;
                 isOnPositiveObstacle = true;
-                isJumping = false;
-                isFalling = false;
-                verticalVelocity = 0;
+                StopJumping();
                 return true;
             }
 
@@ -192,42 +244,36 @@ namespace GeometryDash.Views
 
             Rect dangerousZone = new Rect(
                 obstacleRect.Left,
-                obstacleRect.Top + 5, 
+                obstacleRect.Top + LandingTolerance,
                 obstacleRect.Width,
-                obstacleRect.Height - 5
+                obstacleRect.Height - LandingTolerance
             );
 
             if (playerRect.IntersectsWith(dangerousZone))
-                return true; 
+                return true;
 
-            return false; 
+            return false;
+        }
+
+        private void ResetElementPosition(FrameworkElement element, double left, double top)
+        {
+            Canvas.SetLeft(element, left);
+            Canvas.SetTop(element, top);
         }
 
         public void RestartGame()
         {
-            Canvas.SetLeft(PlayerSprite, 44);
-            Canvas.SetTop(PlayerSprite, 200);
+            ResetElementPosition(PlayerSprite, PlayerStartX, GroundLevelY);
 
-            Canvas.SetLeft(Obstacle1, 683);
-            Canvas.SetTop(Obstacle1, 200);
+            ResetElementPosition(Obstacle1, 683, GroundLevelY);
+            ResetElementPosition(Obstacle2, 350, GroundLevelY);
 
-            Canvas.SetLeft(Obstacle2, 350);
-            Canvas.SetTop(Obstacle2, 200);
+            ResetElementPosition(PositiveObstacle1, 1579, 95);
+            ResetElementPosition(PositiveObstacle2, 1042, 150);
+            ResetElementPosition(PositiveObstacle3, 1281, 95);
+            ResetElementPosition(PositiveObstacle5, 1882, 152);
 
-            Canvas.SetLeft(PositiveObstacle1, 1579);
-            Canvas.SetTop(PositiveObstacle1, 95);
-
-            Canvas.SetLeft(PositiveObstacle2, 1042);
-            Canvas.SetTop(PositiveObstacle2, 150);
-
-            Canvas.SetLeft(PositiveObstacle3, 1281);
-            Canvas.SetTop(PositiveObstacle3, 95);
-
-            Canvas.SetLeft(PositiveObstacle5, 1882);
-            Canvas.SetTop(PositiveObstacle5, 152);
-
-            isJumping = false;
-            verticalVelocity = 0;
+            StopJumping();
             gameOver = false;
             isOnPositiveObstacle = false;
             currentPositiveObstacle = null;
